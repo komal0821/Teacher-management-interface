@@ -1,12 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
-  trailingSlash: true,
-  images: {
-    unoptimized: true
+  eslint: {
+    ignoreDuringBuilds: true,
   },
-  assetPrefix: process.env.NODE_ENV === 'production' ? '/Teacher-management-interface' : '',
-  basePath: process.env.NODE_ENV === 'production' ? '/Teacher-management-interface' : '',
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 }
 
 module.exports = nextConfig

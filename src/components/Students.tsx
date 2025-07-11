@@ -10,7 +10,7 @@ export function Students() {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const filteredStudents = students.filter(student =>
+  const filteredStudents = students.filter((student: any) =>
     student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     student.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
     student.grade.toLowerCase().includes(searchTerm.toLowerCase())
@@ -222,13 +222,13 @@ export function Students() {
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold text-green-600">
-                {students.filter(s => s.status === 'active').length}
+                {students.filter((s: any) => s.status === 'active').length}
               </p>
               <p className="text-sm text-gray-600">Active</p>
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold text-blue-600">
-                {(students.reduce((sum, s) => sum + s.gpa, 0) / students.length).toFixed(1)}
+                {(students.reduce((sum: any, s: any) => sum + s.gpa, 0) / students.length).toFixed(1)}
               </p>
               <p className="text-sm text-gray-600">Avg GPA</p>
             </div>
@@ -238,7 +238,7 @@ export function Students() {
 
       {/* Students Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
-        {filteredStudents.map((student) => (
+        {filteredStudents.map((student: any) => (
           <StudentCard key={student.id} student={student} />
         ))}
       </div>

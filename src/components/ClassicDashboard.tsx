@@ -41,7 +41,7 @@ export function ClassicDashboard({ teachers }: ClassicDashboardProps) {
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
-      <Sidebar activeItem={activeSection} onItemSelect={setActiveSection} />
+      <Sidebar activeItem={activeSection} onItemClick={setActiveSection} />
       
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
