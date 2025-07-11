@@ -1,0 +1,312 @@
+'use client';
+
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { TeacherProfile, TeacherMeeting, TeacherLeave, TeacherAnalytics, SubjectStats } from '@/types/teacher';
+import { Student, Course } from '@/types/common';
+import { 
+  mockTeachers, 
+  mockTeacherMeetings, 
+  mockTeacherLeaves, 
+  mockTeacherAnalytics, 
+  mockSubjectStats,
+  mockStudents,
+  mockCourses
+} from '@/data/allMockData';
+
+interface DataContextType {
+  // Data
+  teachers: TeacherProfile[];
+  meetings: TeacherMeeting[];
+  leaves: TeacherLeave[];
+  analytics: TeacherAnalytics[];
+  subjectStats: SubjectStats[];
+  students: Student[];
+  courses: Course[];
+  
+  // Teacher actions
+  addTeacher: (teacher: Omit<TeacherProfile, 'id'>) => void;
+  updateTeacher: (teacher: TeacherProfile) => void;
+  deleteTeacher: (id: string) => void;
+  
+  // Meeting actions
+  addMeeting: (meeting: Omit<TeacherMeeting, 'id'>) => void;
+  updateMeeting: (meeting: TeacherMeeting) => void;
+  deleteMeeting: (id: string) => void;
+  
+  // Leave actions
+  addLeave: (leave: Omit<TeacherLeave, 'id'>) => void;
+  updateLeave: (leave: TeacherLeave) => void;
+  deleteLeave: (id: string) => void;
+  approveLeave: (id: string) => void;
+  rejectLeave: (id: string) => void;
+  
+  // Student actions
+  addStudent: (student: Omit<Student, 'id'>) => void;
+  updateStudent: (student: Student) => void;
+  deleteStudent: (id: string) => void;
+  
+  // Course actions
+  addCourse: (course: Omit<Course, 'id'>) => void;
+  updateCourse: (course: Course) => void;
+  deleteCourse: (id: string) => void;
+  
+  // Utility functions
+  refreshAnalytics: () => void;
+}
+
+const DataContext = createContext<DataContextType | undefined>(undefined);
+
+// Helper functions for localStorage
+const getStoredData = <T>(key: string, defaultValue: T): T => {
+  if (typeof window === 'undefined') return defaultValue;
+  try {
+    const stored = localStorage.getItem(key);
+    return stored ? JSON.parse(stored) : defaultValue;
+  } catch {
+    return defaultValue;
+  }
+};
+
+const setStoredData = <T>(key: string, data: T): void => {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch (error) {
+    console.error('Failed to save to localStorage:', error);
+  }
+};
+
+export function DataProvider({ children }: { children: React.ReactNode }) {
+  const [teachers, setTeachers] = useState<TeacherProfile[]>(() => 
+    getStoredData('tms_teachers', mockTeachers)
+  );
+  const [meetings, setMeetings] = useState<TeacherMeeting[]>(() => 
+    getStoredData('tms_meetings', mockTeacherMeetings)
+  );
+  const [leaves, setLeaves] = useState<TeacherLeave[]>(() => 
+    getStoredData('tms_leaves', mockTeacherLeaves)
+  );
+  const [analytics, setAnalytics] = useState<TeacherAnalytics[]>(() => 
+    getStoredData('tms_analytics', mockTeacherAnalytics)
+  );
+  const [subjectStats, setSubjectStats] = useState<SubjectStats[]>(() => 
+    getStoredData('tms_subjectStats', mockSubjectStats)
+  );
+  const [students, setStudents] = useState<Student[]>(() => 
+    getStoredData('tms_students', mockStudents)
+  );
+  const [courses, setCourses] = useState<Course[]>(() => 
+    getStoredData('tms_courses', mockCourses)
+  );
+
+  // Generate unique ID
+  const generateId = () => Date.now().toString() + Math.random().toString(36).substr(2, 9);
+
+  // Teacher actions
+  const addTeacher = (teacherData: Omit<TeacherProfile, 'id'>) => {
+    const newTeacher: TeacherProfile = {
+      ...teacherData,
+      id: generateId(),
+    };
+    setTeachers(prev => [...prev, newTeacher]);
+    refreshAnalytics();
+  };
+
+  const updateTeacher = (updatedTeacher: TeacherProfile) => {
+    setTeachers(prev => prev.map(t => t.id === updatedTeacher.id ? updatedTeacher : t));
+    refreshAnalytics();
+  };
+
+  const deleteTeacher = (id: string) => {
+    setTeachers(prev => prev.filter(t => t.id !== id));
+    // Also remove related meetings and leaves
+    setMeetings(prev => prev.filter(m => m.teacherId !== id));
+    setLeaves(prev => prev.filter(l => l.teacherId !== id));
+    refreshAnalytics();
+  };
+
+  // Meeting actions
+  const addMeeting = (meetingData: Omit<TeacherMeeting, 'id'>) => {
+    const newMeeting: TeacherMeeting = {
+      ...meetingData,
+      id: generateId(),
+      createdAt: new Date().toISOString(),
+    };
+    setMeetings(prev => [...prev, newMeeting]);
+  };
+
+  const updateMeeting = (updatedMeeting: TeacherMeeting) => {
+    setMeetings(prev => prev.map(m => m.id === updatedMeeting.id ? updatedMeeting : m));
+  };
+
+  const deleteMeeting = (id: string) => {
+    setMeetings(prev => prev.filter(m => m.id !== id));
+  };
+
+  // Leave actions
+  const addLeave = (leaveData: Omit<TeacherLeave, 'id'>) => {
+    const newLeave: TeacherLeave = {
+      ...leaveData,
+      id: generateId(),
+      appliedDate: leaveData.appliedDate || new Date().toISOString().split('T')[0],
+    };
+    setLeaves(prev => [...prev, newLeave]);
+  };
+
+  const updateLeave = (updatedLeave: TeacherLeave) => {
+    setLeaves(prev => prev.map(l => l.id === updatedLeave.id ? updatedLeave : l));
+  };
+
+  const deleteLeave = (id: string) => {
+    setLeaves(prev => prev.filter(l => l.id !== id));
+  };
+
+  const approveLeave = (id: string) => {
+    setLeaves(prev => prev.map(l => 
+      l.id === id 
+        ? { ...l, status: 'approved', approvedBy: 'HR Manager', approvedDate: new Date().toISOString() }
+        : l
+    ));
+  };
+
+  const rejectLeave = (id: string) => {
+    setLeaves(prev => prev.map(l => 
+      l.id === id 
+        ? { ...l, status: 'rejected', approvedBy: 'HR Manager', approvedDate: new Date().toISOString() }
+        : l
+    ));
+  };
+
+  // Student actions
+  const addStudent = (studentData: Omit<Student, 'id'>) => {
+    const newStudent: Student = {
+      ...studentData,
+      id: generateId(),
+    };
+    setStudents(prev => [...prev, newStudent]);
+  };
+
+  const updateStudent = (updatedStudent: Student) => {
+    setStudents(prev => prev.map(s => s.id === updatedStudent.id ? updatedStudent : s));
+  };
+
+  const deleteStudent = (id: string) => {
+    setStudents(prev => prev.filter(s => s.id !== id));
+  };
+
+  // Course actions
+  const addCourse = (courseData: Omit<Course, 'id'>) => {
+    const newCourse: Course = {
+      ...courseData,
+      id: generateId(),
+    };
+    setCourses(prev => [...prev, newCourse]);
+  };
+
+  const updateCourse = (updatedCourse: Course) => {
+    setCourses(prev => prev.map(c => c.id === updatedCourse.id ? updatedCourse : c));
+  };
+
+  const deleteCourse = (id: string) => {
+    setCourses(prev => prev.filter(c => c.id !== id));
+  };
+
+  // Refresh analytics based on current data
+  const refreshAnalytics = () => {
+    const updatedAnalytics = teachers.map(teacher => {
+      const teacherStudents = students.filter(student => 
+        student.subjects.some(subject => teacher.subjects.includes(subject))
+      ).length;
+      
+      return {
+        teacherId: teacher.id,
+        teacherName: teacher.name,
+        subjects: teacher.subjects,
+        totalStudents: teacherStudents,
+        totalClasses: Math.floor(Math.random() * 150) + 50, // Mock data
+        averageRating: teacher.rating,
+        completedHours: Math.floor(Math.random() * 200) + 100, // Mock data
+        upcomingClasses: Math.floor(Math.random() * 30) + 10, // Mock data
+        monthlyEarnings: Math.floor(Math.random() * 3000) + 3000, // Mock data
+      };
+    });
+    setAnalytics(updatedAnalytics);
+
+    // Update subject stats
+    const subjectMap = new Map<string, { teachers: string[], students: number, ratings: number[] }>();
+    
+    teachers.forEach(teacher => {
+      teacher.subjects.forEach(subject => {
+        if (!subjectMap.has(subject)) {
+          subjectMap.set(subject, { teachers: [], students: 0, ratings: [] });
+        }
+        const subjectData = subjectMap.get(subject)!;
+        subjectData.teachers.push(teacher.name);
+        subjectData.ratings.push(teacher.rating);
+        
+        // Count students for this subject
+        const subjectStudents = students.filter(student => 
+          student.subjects.includes(subject)
+        ).length;
+        subjectData.students += subjectStudents;
+      });
+    });
+
+    const updatedSubjectStats = Array.from(subjectMap.entries()).map(([subject, data]) => ({
+      subject,
+      teacherCount: data.teachers.length,
+      teachers: data.teachers,
+      totalStudents: data.students,
+      averageRating: data.ratings.reduce((sum, rating) => sum + rating, 0) / data.ratings.length,
+    }));
+
+    setSubjectStats(updatedSubjectStats);
+  };
+
+  // Refresh analytics when teachers or students change
+  useEffect(() => {
+    refreshAnalytics();
+  }, [teachers.length, students.length]);
+
+  const value: DataContextType = {
+    teachers,
+    meetings,
+    leaves,
+    analytics,
+    subjectStats,
+    students,
+    courses,
+    addTeacher,
+    updateTeacher,
+    deleteTeacher,
+    addMeeting,
+    updateMeeting,
+    deleteMeeting,
+    addLeave,
+    updateLeave,
+    deleteLeave,
+    approveLeave,
+    rejectLeave,
+    addStudent,
+    updateStudent,
+    deleteStudent,
+    addCourse,
+    updateCourse,
+    deleteCourse,
+    refreshAnalytics,
+  };
+
+  return (
+    <DataContext.Provider value={value}>
+      {children}
+    </DataContext.Provider>
+  );
+}
+
+export function useData() {
+  const context = useContext(DataContext);
+  if (context === undefined) {
+    throw new Error('useData must be used within a DataProvider');
+  }
+  return context;
+}

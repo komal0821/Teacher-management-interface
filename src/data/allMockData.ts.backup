@@ -1,0 +1,661 @@
+import { Student, Course, ScheduleEvent, Payment, Report, DashboardStats } from '@/types/common';
+import { TeacherProfile, TeacherMeeting, TeacherLeave, TeacherAnalytics, SubjectStats } from '@/types/teacher';
+
+// Students Data
+export const mockStudents: Student[] = [
+  {
+    id: '1',
+    name: 'Emma Johnson',
+    email: 'emma.johnson@email.com',
+    phone: '+1234567890',
+    grade: '10th Grade',
+    subjects: ['Mathematics', 'Physics', 'Chemistry'],
+    enrollmentDate: '2024-01-15',
+    status: 'active',
+    gpa: 3.8,
+    address: {
+      street: '123 Oak Street',
+      city: 'Boston',
+      state: 'Massachusetts',
+      zipCode: '02101'
+    },
+    parentContact: {
+      name: 'Robert Johnson',
+      phone: '+1234567891',
+      email: 'robert.johnson@email.com'
+    }
+  },
+  {
+    id: '2',
+    name: 'Michael Chen',
+    email: 'michael.chen@email.com',
+    phone: '+1234567892',
+    grade: '11th Grade',
+    subjects: ['Computer Science', 'Mathematics', 'English'],
+    enrollmentDate: '2024-02-01',
+    status: 'active',
+    gpa: 3.9,
+    address: {
+      street: '456 Pine Avenue',
+      city: 'San Francisco',
+      state: 'California',
+      zipCode: '94105'
+    },
+    parentContact: {
+      name: 'Lisa Chen',
+      phone: '+1234567893',
+      email: 'lisa.chen@email.com'
+    }
+  },
+  {
+    id: '3',
+    name: 'Sarah Williams',
+    email: 'sarah.williams@email.com',
+    phone: '+1234567894',
+    grade: '12th Grade',
+    subjects: ['English Literature', 'History', 'Art'],
+    enrollmentDate: '2023-09-01',
+    status: 'active',
+    gpa: 3.7,
+    address: {
+      street: '789 Maple Drive',
+      city: 'Chicago',
+      state: 'Illinois',
+      zipCode: '60601'
+    },
+    parentContact: {
+      name: 'David Williams',
+      phone: '+1234567895',
+      email: 'david.williams@email.com'
+    }
+  }
+];
+
+// Courses Data
+export const mockCourses: Course[] = [
+  {
+    id: '1',
+    name: 'Advanced Mathematics',
+    code: 'MATH-401',
+    description: 'Advanced calculus and mathematical analysis for high school students',
+    credits: 4,
+    duration: '1 Semester',
+    level: 'advanced',
+    category: 'Mathematics',
+    instructor: 'Alynia Allan',
+    maxStudents: 25,
+    enrolledStudents: 18,
+    schedule: {
+      days: ['Monday', 'Wednesday', 'Friday'],
+      time: '09:00 AM',
+      duration: 90
+    },
+    fee: 1200,
+    status: 'active'
+  },
+  {
+    id: '2',
+    name: 'Web Development Fundamentals',
+    code: 'CS-201',
+    description: 'Learn HTML, CSS, JavaScript and modern web development practices',
+    credits: 3,
+    duration: '1 Semester',
+    level: 'beginner',
+    category: 'Computer Science',
+    instructor: 'Michael Chen',
+    maxStudents: 20,
+    enrolledStudents: 15,
+    schedule: {
+      days: ['Tuesday', 'Thursday'],
+      time: '02:00 PM',
+      duration: 120
+    },
+    fee: 1500,
+    status: 'active'
+  },
+  {
+    id: '3',
+    name: 'Creative Writing Workshop',
+    code: 'ENG-301',
+    description: 'Develop creative writing skills through various literary forms',
+    credits: 2,
+    duration: '1 Semester',
+    level: 'intermediate',
+    category: 'English',
+    instructor: 'Dr. Sarah Johnson',
+    maxStudents: 15,
+    enrolledStudents: 12,
+    schedule: {
+      days: ['Wednesday'],
+      time: '04:00 PM',
+      duration: 180
+    },
+    fee: 800,
+    status: 'active'
+  }
+];
+
+// Schedule Data
+export const mockSchedule: ScheduleEvent[] = [
+  {
+    id: '1',
+    title: 'Advanced Mathematics - Calculus',
+    type: 'class',
+    date: '2024-01-15',
+    startTime: '09:00',
+    endTime: '10:30',
+    instructor: 'Alynia Allan',
+    course: 'MATH-401',
+    students: ['1', '2'],
+    location: 'Room 101',
+    status: 'scheduled',
+    description: 'Introduction to differential calculus'
+  },
+  {
+    id: '2',
+    title: 'Web Development Lab',
+    type: 'class',
+    date: '2024-01-15',
+    startTime: '14:00',
+    endTime: '16:00',
+    instructor: 'Michael Chen',
+    course: 'CS-201',
+    students: ['2', '3'],
+    location: 'Computer Lab',
+    status: 'scheduled',
+    description: 'Hands-on HTML and CSS practice'
+  },
+  {
+    id: '3',
+    title: 'Faculty Meeting',
+    type: 'meeting',
+    date: '2024-01-16',
+    startTime: '15:00',
+    endTime: '16:00',
+    instructor: 'All Staff',
+    location: 'Conference Room',
+    status: 'scheduled',
+    description: 'Monthly faculty coordination meeting'
+  }
+];
+
+// Payments Data
+export const mockPayments: Payment[] = [
+  {
+    id: '1',
+    studentId: '1',
+    studentName: 'Emma Johnson',
+    amount: 1200,
+    type: 'tuition',
+    status: 'paid',
+    dueDate: '2024-01-01',
+    paidDate: '2023-12-28',
+    method: 'bank_transfer',
+    description: 'Tuition fee for Advanced Mathematics course',
+    invoiceNumber: 'INV-2024-001'
+  },
+  {
+    id: '2',
+    studentId: '2',
+    studentName: 'Michael Chen',
+    amount: 1500,
+    type: 'tuition',
+    status: 'pending',
+    dueDate: '2024-01-15',
+    description: 'Tuition fee for Web Development course',
+    invoiceNumber: 'INV-2024-002'
+  },
+  {
+    id: '3',
+    studentId: '3',
+    studentName: 'Sarah Williams',
+    amount: 800,
+    type: 'tuition',
+    status: 'overdue',
+    dueDate: '2024-01-10',
+    description: 'Tuition fee for Creative Writing Workshop',
+    invoiceNumber: 'INV-2024-003'
+  }
+];
+
+// Reports Data
+export const mockReports: Report[] = [
+  {
+    id: '1',
+    title: 'Monthly Academic Performance Report',
+    type: 'academic',
+    generatedDate: '2024-01-01',
+    period: 'December 2023',
+    data: {
+      averageGPA: 3.8,
+      totalStudents: 156,
+      passRate: 94.2
+    },
+    summary: 'Overall academic performance shows improvement with 94.2% pass rate',
+    charts: [
+      {
+        type: 'bar',
+        data: {
+          labels: ['Math', 'Science', 'English', 'History'],
+          values: [85, 78, 92, 88]
+        }
+      }
+    ]
+  },
+  {
+    id: '2',
+    title: 'Financial Summary Report',
+    type: 'financial',
+    generatedDate: '2024-01-01',
+    period: 'Q4 2023',
+    data: {
+      totalRevenue: 45000,
+      totalExpenses: 32000,
+      netProfit: 13000
+    },
+    summary: 'Strong financial performance with 28.9% profit margin',
+    charts: [
+      {
+        type: 'pie',
+        data: {
+          labels: ['Tuition', 'Registration', 'Materials'],
+          values: [35000, 7000, 3000]
+        }
+      }
+    ]
+  }
+];
+
+// Dashboard Stats
+export const mockDashboardStats: DashboardStats = {
+  totalStudents: 156,
+  totalTeachers: 12,
+  totalCourses: 24,
+  totalRevenue: 45000,
+  activeClasses: 18,
+  pendingPayments: 8,
+  recentActivities: [
+    {
+      id: '1',
+      type: 'enrollment',
+      message: 'New student Emma Johnson enrolled in Advanced Mathematics',
+      timestamp: '2024-01-15T10:30:00Z',
+      user: 'Admin'
+    },
+    {
+      id: '2',
+      type: 'payment',
+      message: 'Payment received from Michael Chen for Web Development course',
+      timestamp: '2024-01-15T09:15:00Z',
+      user: 'Finance'
+    },
+    {
+      id: '3',
+      type: 'schedule',
+      message: 'New class scheduled for Creative Writing Workshop',
+      timestamp: '2024-01-14T16:45:00Z',
+      user: 'Dr. Sarah Johnson'
+    }
+  ]
+};
+
+// Teachers Data (from existing mockData)
+export const mockTeachers: TeacherProfile[] = [
+  {
+    id: '1',
+      { id: '8', day: 'Friday', startTime: '14:00', endTime: '16:00', isAvailable: true, subject: 'Physics', type: 'private' },
+    ]
+  },
+  {
+    id: '2',
+    name: 'Dr. Sarah Johnson',
+    email: 'sarah.johnson@example.com',
+    phone: '+1555 123 4567',
+    address: {
+      street: '123 Academic Lane',
+      city: 'Boston',
+      state: 'Massachusetts',
+      zipCode: '02101'
+    },
+    status: 'active',
+    experience: 12,
+    rating: 4.9,
+    totalStudents: 234,
+    subjects: ['English Literature', 'Creative Writing', 'History'],
+    qualifications: [
+      {
+        id: '5',
+        name: 'English Literature Advanced',
+        type: 'private',
+        rate: 55.00,
+        currency: 'USD',
+        description: 'Advanced literature analysis and critical thinking for college-level students'
+      },
+      {
+        id: '6',
+        name: 'Creative Writing Workshop',
+        type: 'group',
+        rate: 35.00,
+        currency: 'USD',
+        description: 'Interactive creative writing sessions for aspiring writers'
+      },
+      {
+        id: '7',
+        name: 'History Fundamentals',
+        type: 'private',
+        rate: 48.00,
+        currency: 'USD',
+        description: 'Comprehensive world history and critical analysis'
+      }
+    ],
+    schedule: [
+      { id: '9', day: 'Monday', startTime: '10:00', endTime: '12:00', isAvailable: true, subject: 'English Literature', type: 'private' },
+      { id: '10', day: 'Tuesday', startTime: '14:00', endTime: '16:00', isAvailable: true, subject: 'Creative Writing', type: 'group' },
+      { id: '11', day: 'Wednesday', startTime: '09:00', endTime: '11:00', isAvailable: true, subject: 'History', type: 'private' },
+      { id: '12', day: 'Thursday', startTime: '15:00', endTime: '17:00', isAvailable: true, subject: 'English Literature', type: 'group' },
+      { id: '13', day: 'Friday', startTime: '10:00', endTime: '12:00', isAvailable: false, subject: 'Creative Writing', type: 'private' },
+    ]
+  },
+  {
+    id: '3',
+    name: 'Michael Chen',
+    email: 'michael.chen@example.com',
+    phone: '+1777 888 9999',
+    address: {
+      street: '789 Tech Boulevard',
+      city: 'San Francisco',
+      state: 'California',
+      zipCode: '94105'
+    },
+    status: 'active',
+    experience: 6,
+    rating: 4.7,
+    totalStudents: 89,
+    subjects: ['Computer Science', 'Programming', 'Web Development'],
+    qualifications: [
+      {
+        id: '8',
+        name: 'Python Programming',
+        type: 'private',
+        rate: 60.00,
+        currency: 'USD',
+        description: 'Complete Python programming from basics to advanced concepts'
+      },
+      {
+        id: '9',
+        name: 'Web Development Bootcamp',
+        type: 'group',
+        rate: 40.00,
+        currency: 'USD',
+        description: 'Full-stack web development using modern frameworks'
+      },
+      {
+        id: '10',
+        name: 'Data Structures & Algorithms',
+        type: 'private',
+        rate: 65.00,
+        currency: 'USD',
+        description: 'Advanced computer science concepts for technical interviews'
+      }
+    ],
+    schedule: [
+      { id: '14', day: 'Monday', startTime: '13:00', endTime: '15:00', isAvailable: true, subject: 'Python Programming', type: 'private' },
+      { id: '15', day: 'Tuesday', startTime: '09:00', endTime: '12:00', isAvailable: true, subject: 'Web Development', type: 'group' },
+      { id: '16', day: 'Wednesday', startTime: '14:00', endTime: '16:00', isAvailable: true, subject: 'Data Structures', type: 'private' },
+      { id: '17', day: 'Thursday', startTime: '10:00', endTime: '12:00', isAvailable: false, subject: 'Programming', type: 'group' },
+      { id: '18', day: 'Friday', startTime: '13:00', endTime: '15:00', isAvailable: true, subject: 'Python Programming', type: 'private' },
+      { id: '19', day: 'Saturday', startTime: '09:00', endTime: '11:00', isAvailable: true, subject: 'Web Development', type: 'group' },
+    ]
+  }
+];
+
+// Teacher Meetings Data
+export const mockTeacherMeetings: TeacherMeeting[] = [
+  {
+    id: '1',
+    teacherId: '1',
+    teacherName: 'Alynia Allan',
+    title: 'Performance Review Q4 2024',
+    type: 'performance',
+    date: '2024-12-15',
+    startTime: '10:00',
+    endTime: '11:00',
+    location: 'Conference Room A',
+    attendees: ['HR Manager', 'Academic Director'],
+    agenda: 'Quarterly performance review, goal setting for 2025',
+    notes: 'Excellent performance in mathematics department',
+    status: 'completed',
+    priority: 'medium',
+    createdBy: 'HR Manager',
+    createdAt: '2024-12-01'
+  },
+  {
+    id: '2',
+    teacherId: '2',
+    teacherName: 'Sarah Johnson',
+    title: 'New Curriculum Training',
+    type: 'training',
+    date: '2024-12-20',
+    startTime: '14:00',
+    endTime: '16:00',
+    location: 'Training Room B',
+    attendees: ['Training Coordinator', 'Department Head'],
+    agenda: 'Introduction to new science curriculum standards',
+    status: 'scheduled',
+    priority: 'high',
+    createdBy: 'Training Coordinator',
+    createdAt: '2024-12-05'
+  },
+  {
+    id: '3',
+    teacherId: '3',
+    teacherName: 'Michael Chen',
+    title: 'HR Policy Update Meeting',
+    type: 'hr',
+    date: '2024-12-18',
+    startTime: '09:00',
+    endTime: '10:00',
+    location: 'HR Office',
+    attendees: ['HR Manager'],
+    agenda: 'Updates on leave policies and benefits',
+    status: 'scheduled',
+    priority: 'medium',
+    createdBy: 'HR Manager',
+    createdAt: '2024-12-10'
+  },
+  {
+    id: '4',
+    teacherId: '1',
+    teacherName: 'Alynia Allan',
+    title: 'Senior Staff Meeting',
+    type: 'senior',
+    date: '2024-12-22',
+    startTime: '11:00',
+    endTime: '12:30',
+    location: 'Board Room',
+    attendees: ['Principal', 'Vice Principal', 'Department Heads'],
+    agenda: 'Year-end review and planning for next academic year',
+    status: 'scheduled',
+    priority: 'high',
+    createdBy: 'Principal',
+    createdAt: '2024-12-08'
+  },
+  {
+    id: '5',
+    teacherId: '2',
+    teacherName: 'Sarah Johnson',
+    title: 'Student Progress Discussion',
+    type: 'performance',
+    date: '2024-12-12',
+    startTime: '15:00',
+    endTime: '16:00',
+    location: 'Office 201',
+    attendees: ['Academic Coordinator'],
+    agenda: 'Discussion about struggling students in chemistry class',
+    notes: 'Action plan developed for student support',
+    status: 'completed',
+    priority: 'medium',
+    createdBy: 'Academic Coordinator',
+    createdAt: '2024-12-05'
+  }
+];
+
+// Teacher Leaves Data
+export const mockTeacherLeaves: TeacherLeave[] = [
+  {
+    id: '1',
+    teacherId: '1',
+    teacherName: 'Alynia Allan',
+    type: 'vacation',
+    startDate: '2024-12-23',
+    endDate: '2024-12-30',
+    days: 8,
+    reason: 'Year-end vacation with family',
+    status: 'approved',
+    appliedDate: '2024-11-15',
+    approvedBy: 'HR Manager',
+    approvedDate: '2024-11-18',
+    comments: 'Approved for holiday season'
+  },
+  {
+    id: '2',
+    teacherId: '2',
+    teacherName: 'Sarah Johnson',
+    type: 'sick',
+    startDate: '2024-12-05',
+    endDate: '2024-12-07',
+    days: 3,
+    reason: 'Flu symptoms and recovery',
+    status: 'approved',
+    appliedDate: '2024-12-04',
+    approvedBy: 'HR Manager',
+    approvedDate: '2024-12-04',
+    comments: 'Medical certificate provided'
+  },
+  {
+    id: '3',
+    teacherId: '3',
+    teacherName: 'Michael Chen',
+    type: 'personal',
+    startDate: '2024-12-20',
+    endDate: '2024-12-20',
+    days: 1,
+    reason: 'Family emergency',
+    status: 'pending',
+    appliedDate: '2024-12-18',
+    comments: 'Urgent family matter'
+  },
+  {
+    id: '4',
+    teacherId: '1',
+    teacherName: 'Alynia Allan',
+    type: 'vacation',
+    startDate: '2024-11-28',
+    endDate: '2024-11-29',
+    days: 2,
+    reason: 'Thanksgiving break extension',
+    status: 'approved',
+    appliedDate: '2024-11-10',
+    approvedBy: 'HR Manager',
+    approvedDate: '2024-11-12',
+    comments: 'Approved for holiday'
+  },
+  {
+    id: '5',
+    teacherId: '2',
+    teacherName: 'Sarah Johnson',
+    type: 'training',
+    startDate: '2024-11-15',
+    endDate: '2024-11-16',
+    days: 2,
+    reason: 'Professional development conference',
+    status: 'approved',
+    appliedDate: '2024-10-20',
+    approvedBy: 'Academic Director',
+    approvedDate: '2024-10-22',
+    comments: 'Conference attendance approved'
+  }
+];
+
+// Teacher Analytics Data
+export const mockTeacherAnalytics: TeacherAnalytics[] = [
+  {
+    teacherId: '1',
+    teacherName: 'Alynia Allan',
+    subjects: ['Mathematics', 'Advanced Calculus', 'Statistics'],
+    totalStudents: 45,
+    totalClasses: 120,
+    averageRating: 4.8,
+    completedHours: 180,
+    upcomingClasses: 25,
+    monthlyEarnings: 5200
+  },
+  {
+    teacherId: '2',
+    teacherName: 'Sarah Johnson',
+    subjects: ['Chemistry', 'Physics', 'Biology'],
+    totalStudents: 38,
+    totalClasses: 95,
+    averageRating: 4.6,
+    completedHours: 142,
+    upcomingClasses: 18,
+    monthlyEarnings: 4800
+  },
+  {
+    teacherId: '3',
+    teacherName: 'Michael Chen',
+    subjects: ['Computer Science', 'Programming', 'Web Development'],
+    totalStudents: 32,
+    totalClasses: 88,
+    averageRating: 4.9,
+    completedHours: 132,
+    upcomingClasses: 22,
+    monthlyEarnings: 4500
+  }
+];
+
+// Subject Statistics
+export const mockSubjectStats: SubjectStats[] = [
+  {
+    subject: 'Mathematics',
+    teacherCount: 2,
+    teachers: ['Alynia Allan', 'Sarah Johnson'],
+    totalStudents: 65,
+    averageRating: 4.7
+  },
+  {
+    subject: 'Chemistry',
+    teacherCount: 1,
+    teachers: ['Sarah Johnson'],
+    totalStudents: 28,
+    averageRating: 4.6
+  },
+  {
+    subject: 'Computer Science',
+    teacherCount: 1,
+    teachers: ['Michael Chen'],
+    totalStudents: 32,
+    averageRating: 4.9
+  },
+  {
+    subject: 'Physics',
+    teacherCount: 1,
+    teachers: ['Sarah Johnson'],
+    totalStudents: 22,
+    averageRating: 4.5
+  },
+  {
+    subject: 'Programming',
+    teacherCount: 1,
+    teachers: ['Michael Chen'],
+    totalStudents: 18,
+    averageRating: 4.8
+  },
+  {
+    subject: 'Statistics',
+    teacherCount: 1,
+    teachers: ['Alynia Allan'],
+    totalStudents: 15,
+    averageRating: 4.9
+  }
+];

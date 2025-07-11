@@ -1,0 +1,195 @@
+'use client';
+
+import { useUser } from '@clerk/nextjs';
+import { 
+  User, 
+  Mail, 
+  Phone, 
+  Calendar, 
+  Shield
+} from 'lucide-react';
+import { useState, useEffect } from 'react';
+
+export function Settings() {
+  const { user, isLoaded } = useUser();
+  const [mounted, setMounted] = useState(false);
+
+  // Prevent hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#B43F3F] mx-auto mb-4"></div>
+          <p className="text-slate-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#B43F3F] mx-auto mb-4"></div>
+          <p className="text-slate-600">Loading user information...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <User className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+          <p className="text-slate-600">No user information available</p>
+        </div>
+      </div>
+    );
+  }
+
+  const InfoCard = ({ icon: Icon, label, value }: {
+    icon: React.ComponentType<any>;
+    label: string;
+    value: string | null | undefined;
+  }) => (
+    <div className="bg-white border border-slate-200 rounded-lg p-4 sm:p-6 shadow-sm">
+      <div className="flex items-start gap-4">
+        <div className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center text-white flex-shrink-0">
+          <Icon className="w-5 h-5" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium text-slate-600 mb-1">{label}</p>
+          <p className="text-lg font-semibold text-slate-800 break-words">
+            {value || 'Not provided'}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white border-b border-slate-200">
+        <div className="px-4 py-6 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+            <div>
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Account Settings</h1>
+              <p className="text-sm sm:text-base text-slate-600 mt-1">Manage your account information and preferences</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="px-4 py-6 sm:px-6 lg:px-8">
+        {/* Profile Overview */}
+        <div className="bg-white border border-slate-200 rounded-lg p-6 shadow-sm mb-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+            {/* Avatar */}
+            <div className="w-20 h-20 bg-[#B43F3F] rounded-full flex items-center justify-center text-white font-bold text-2xl flex-shrink-0">
+              {user.firstName?.[0] || user.emailAddresses[0]?.emailAddress[0]?.toUpperCase() || 'U'}
+            </div>
+            
+            {/* User Info */}
+            <div className="flex-1 min-w-0">
+              <h2 className="text-2xl font-bold text-slate-800 mb-2">
+                {user.firstName && user.lastName 
+                  ? `${user.firstName} ${user.lastName}`
+                  : user.firstName || user.username || 'User'
+                }
+              </h2>
+              <p className="text-slate-600 mb-2">
+                {user.emailAddresses[0]?.emailAddress}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <span className="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">
+                  ✓ Verified Account
+                </span>
+                <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
+                  Teacher Portal Access
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Account Information */}
+        <div className="mb-8">
+          <h3 className="text-lg font-semibold text-slate-800 mb-4">Account Information</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
+            <InfoCard
+              icon={User}
+              label="Full Name"
+              value={user.firstName && user.lastName 
+                ? `${user.firstName} ${user.lastName}`
+                : user.firstName || 'Not provided'
+              }
+            />
+            
+            <InfoCard
+              icon={User}
+              label="Username"
+              value={user.username || user.emailAddresses[0]?.emailAddress?.split('@')[0]}
+            />
+            
+            <InfoCard
+              icon={Mail}
+              label="Email Address"
+              value={user.emailAddresses[0]?.emailAddress}
+            />
+            
+            <InfoCard
+              icon={Phone}
+              label="Phone Number"
+              value={user.phoneNumbers?.[0]?.phoneNumber || 'Not provided'}
+            />
+          </div>
+        </div>
+
+        {/* Account Details */}
+        <div className="mb-8">
+          <h3 className="text-lg font-semibold text-slate-800 mb-4">Account Details</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
+            <InfoCard
+              icon={Calendar}
+              label="Account Created"
+              value={user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              }) : 'Unknown'}
+            />
+            
+            <InfoCard
+              icon={Calendar}
+              label="Last Updated"
+              value={user.updatedAt ? new Date(user.updatedAt).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              }) : 'Unknown'}
+            />
+            
+            <InfoCard
+              icon={Shield}
+              label="Account ID"
+              value={user.id}
+            />
+            
+            <InfoCard
+              icon={Shield}
+              label="Two-Factor Auth"
+              value={user.twoFactorEnabled ? 'Enabled' : 'Disabled'}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
