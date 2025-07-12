@@ -20,7 +20,6 @@ A comprehensive, modern teacher management system built with Next.js, TypeScript
 - **Clerk Integration** - Enterprise-grade authentication with social login
 - **Protected Routes** - Secure access control for all application features
 - **User Profiles** - Complete user account management with settings
-- **Session Management** - Automatic session handling and logout functionality
 
 ### 🎨 Professional UI/UX
 - **Classic Design** - Professional, timeless design with clean lines
@@ -181,48 +180,6 @@ npm run lint
 
 ## 🚀 Live Deployment
 
-### 🌟 Deploy to Vercel (Recommended for Next.js)
-
-**Vercel provides the best experience for Next.js applications with zero configuration.**
-
-#### **Option 1: One-Click Deploy**
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/komal0821/Teacher-management-interface)
-
-#### **Option 2: Manual Deployment**
-1. **Fork/Clone the repository**
-   ```bash
-   git clone https://github.com/komal0821/Teacher-management-interface.git
-   cd Teacher-management-interface
-   ```
-
-2. **Install Vercel CLI**
-   ```bash
-   npm install -g vercel
-   ```
-
-3. **Deploy to Vercel**
-   ```bash
-   vercel
-   ```
-
-4. **Set Environment Variables**
-   - Go to your Vercel dashboard
-   - Navigate to your project settings
-   - Add environment variables:
-     - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
-     - `CLERK_SECRET_KEY`
-
-#### **Option 3: GitHub Integration**
-1. **Connect to Vercel**
-   - Visit [vercel.com](https://vercel.com)
-   - Sign in with GitHub
-   - Import your repository
-
-2. **Configure Environment Variables**
-   - Add your Clerk keys in project settings
-   - Deploy automatically on every push
-
-### 🔧 Other Deployment Platforms
 
 #### **Netlify**
 ```bash
@@ -231,16 +188,7 @@ Build command: npm run build
 Publish directory: out
 ```
 
-#### **AWS Amplify**
-1. Connect your GitHub repository
-2. Add environment variables
-3. Deploy with automatic CI/CD
 
-#### **Railway**
-```bash
-# One command deployment
-railway login
-railway deploy
 ```
 
 ### 🔐 Environment Variables Setup
@@ -258,13 +206,7 @@ railway deploy
    CLERK_SECRET_KEY=sk_test_your_secret_key_here
    ```
 
-### 🌐 Custom Domain Setup
 
-**For Vercel:**
-1. Go to your project dashboard
-2. Navigate to "Domains"
-3. Add your custom domain
-4. Configure DNS settings
 
 ### 📊 Performance Optimization
 
@@ -274,23 +216,16 @@ railway deploy
 - 🔄 **Efficient Updates**: Optimized re-renders
 - 💾 **Smart Caching**: localStorage with SSR safety
 
-## 🤝 Contributing
+Open a Pull Request
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
 - **Next.js Team** - For the amazing React framework
 - **Tailwind CSS** - For the utility-first CSS framework
-- **Vercel** - For the deployment platform and fonts
+- **Netlify** - For the deployment platform and fonts
+- **Architecture** - https://app.eraser.io/workspace/btCk6wKpEXng1eBr5AOF
 
 ---
 
