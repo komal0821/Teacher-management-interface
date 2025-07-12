@@ -224,7 +224,7 @@ Open a Pull Request
 
 - **Next.js Team** - For the amazing React framework
 - **Tailwind CSS** - For the utility-first CSS framework
-- **Vercel** - For the deployment platform and fonts
+- **Netlify** - For the deployment platform and fonts
 
 ---
 
