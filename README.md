@@ -20,7 +20,6 @@ A comprehensive, modern teacher management system built with Next.js, TypeScript
 - **Clerk Integration** - Enterprise-grade authentication with social login
 - **Protected Routes** - Secure access control for all application features
 - **User Profiles** - Complete user account management with settings
-- **Session Management** - Automatic session handling and logout functionality
 
 ### 🎨 Professional UI/UX
 - **Classic Design** - Professional, timeless design with clean lines
