@@ -49,8 +49,8 @@ interface DataContextType {
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
-// Helper functions for localStorage
-const getStoredData = <T,>(key: string, defaultValue: T): T => {
+// Helper functions for localStorage with better SSR support
+function getStoredData<T>(key: string, defaultValue: T): T {
   if (typeof window === 'undefined') return defaultValue;
   try {
     const stored = localStorage.getItem(key);
@@ -58,16 +58,17 @@ const getStoredData = <T,>(key: string, defaultValue: T): T => {
   } catch {
     return defaultValue;
   }
-};
+}
 
-const setStoredData = <T,>(key: string, data: T): void => {
+function setStoredData<T>(key: string, data: T): void {
   if (typeof window === 'undefined') return;
   try {
     localStorage.setItem(key, JSON.stringify(data));
-  } catch (error) {
-    console.error('Failed to save to localStorage:', error);
+  } catch {
+    // Ignore localStorage errors in static export
+    console.warn('localStorage not available');
   }
-};
+}
 
 export function DataProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
@@ -78,15 +79,18 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [subjectStats, setSubjectStats] = useState<SubjectStats[]>(mockSubjectStats);
   const [courses, setCourses] = useState<Course[]>(mockCourses);
 
-  // Initialize data from localStorage after mount to prevent hydration mismatch
+  // Initialize data after mount to prevent hydration mismatch
   useEffect(() => {
     setMounted(true);
-    setTeachers(getStoredData('tms_teachers', mockTeachers));
-    setMeetings(getStoredData('tms_meetings', mockTeacherMeetings));
-    setLeaves(getStoredData('tms_leaves', mockTeacherLeaves));
-    setAnalytics(getStoredData('tms_analytics', mockTeacherAnalytics));
-    setSubjectStats(getStoredData('tms_subjectStats', mockSubjectStats));
-    setCourses(getStoredData('tms_courses', mockCourses));
+    // For static export, always use mock data initially
+    if (typeof window !== 'undefined') {
+      setTeachers(getStoredData('tms_teachers', mockTeachers));
+      setMeetings(getStoredData('tms_meetings', mockTeacherMeetings));
+      setLeaves(getStoredData('tms_leaves', mockTeacherLeaves));
+      setAnalytics(getStoredData('tms_analytics', mockTeacherAnalytics));
+      setSubjectStats(getStoredData('tms_subjectStats', mockSubjectStats));
+      setCourses(getStoredData('tms_courses', mockCourses));
+    }
   }, []);
 
   // Save to localStorage whenever data changes (only after mount)

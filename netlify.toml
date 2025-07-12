@@ -1,15 +1,20 @@
 [build]
   command = "npm run build"
-  publish = ".next"
+  publish = "out"
 
 [build.environment]
   NODE_VERSION = "18"
+  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_test_Y2xpbWJpbmctb2NlbG90LTk3LmNsZXJrLmFjY291bnRzLmRldiQ"
+  CLERK_SECRET_KEY = "sk_test_h48dAtfgtuD7ryJQ3eHlBIt13U0wJ0SevKSYLwFsU4"
 
+# Handle client-side routing
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
-[context.production.environment]
-  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_test_Y2xpbWJpbmctb2NlbG90LTk3LmNsZXJrLmFjY291bnRzLmRldiQ"
-  CLERK_SECRET_KEY = "sk_test_h48dAtfgtuD7ryJQ3eHlBIt13U0wJ0SevKSYLwFsU4"
+# Handle API routes (if any)
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
