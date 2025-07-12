@@ -145,7 +145,7 @@ export function ManageTeachers() {
               placeholder="Search teachers by name or email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 sm:py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B43F3F] focus:border-transparent text-sm sm:text-base"
+              className="w-full pl-10 pr-4 py-2 sm:py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B43F3F] focus:border-transparent text-sm sm:text-base text-slate-900 bg-white"
             />
           </div>
         </div>
@@ -252,7 +252,7 @@ export function ManageTeachers() {
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B43F3F] focus:border-transparent"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B43F3F] focus:border-transparent text-slate-900 bg-white"
                   placeholder="Enter teacher's full name"
                   required
                 />
@@ -267,7 +267,7 @@ export function ManageTeachers() {
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B43F3F] focus:border-transparent"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B43F3F] focus:border-transparent text-slate-900 bg-white"
                   placeholder="teacher@school.com"
                   required
                 />
@@ -282,7 +282,7 @@ export function ManageTeachers() {
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B43F3F] focus:border-transparent"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B43F3F] focus:border-transparent text-slate-900 bg-white"
                   placeholder="+1 (555) 123-4567"
                 />
               </div>
@@ -299,7 +299,7 @@ export function ManageTeachers() {
                     ...formData, 
                     address: {...formData.address, street: e.target.value}
                   })}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B43F3F] focus:border-transparent"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B43F3F] focus:border-transparent text-slate-900 bg-white"
                   placeholder="123 Main Street"
                 />
               </div>
@@ -316,7 +316,7 @@ export function ManageTeachers() {
                       ...formData, 
                       address: {...formData.address, city: e.target.value}
                     })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B43F3F] focus:border-transparent"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B43F3F] focus:border-transparent text-slate-900 bg-white"
                     placeholder="City"
                   />
                 </div>
@@ -331,7 +331,7 @@ export function ManageTeachers() {
                       ...formData, 
                       address: {...formData.address, state: e.target.value}
                     })}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B43F3F] focus:border-transparent"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B43F3F] focus:border-transparent text-slate-900 bg-white"
                     placeholder="State"
                   />
                 </div>

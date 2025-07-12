@@ -5,17 +5,16 @@ import { TeacherLeave } from '@/types/teacher';
 import { useData } from '@/contexts/DataContext';
 import { 
   Plus, 
+  Search, 
+  Filter, 
   Calendar, 
   Clock, 
-  User,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
+  User, 
+  FileText,
   MoreVertical,
   Check,
   X,
-  Edit,
-  Trash2
+  CheckCircle
 } from 'lucide-react';
 
 export function TeacherLeaves() {
@@ -24,11 +23,24 @@ export function TeacherLeaves() {
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterType, setFilterType] = useState('all');
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'my-requests' | 'approvals'>('my-requests');
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [formData, setFormData] = useState({
+    type: 'sick' as 'sick' | 'vacation' | 'personal' | 'emergency' | 'maternity' | 'paternity' | 'training',
+    startDate: '',
+    endDate: '',
+    reason: ''
+  });
 
-  // Filter leaves
-  const filteredLeaves = leaves.filter(leave => {
+  // Filter leaves based on active tab
+  const myLeaves = leaves.filter(leave => leave.teacherId === 'current-user');
+  const pendingApprovals = leaves.filter(leave => leave.teacherId !== 'current-user' && leave.status === 'pending');
+  
+  const currentLeaves = activeTab === 'my-requests' ? myLeaves : pendingApprovals;
+  
+  const filteredLeaves = currentLeaves.filter(leave => {
     const statusMatch = filterStatus === 'all' || leave.status === filterStatus;
-    const typeMatch = filterType === 'all' || leave.leaveType === filterType;
+    const typeMatch = filterType === 'all' || leave.type === filterType;
     return statusMatch && typeMatch;
   });
 
@@ -80,9 +92,53 @@ export function TeacherLeaves() {
         return 'bg-purple-100 text-purple-800';
       case 'emergency':
         return 'bg-orange-100 text-orange-800';
+      case 'maternity':
+      case 'paternity':
+        return 'bg-pink-100 text-pink-800';
+      case 'training':
+        return 'bg-green-100 text-green-800';
       default:
         return 'bg-slate-100 text-slate-800';
     }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const leaveData = {
+      teacherId: 'current-user', // This would come from auth context
+      teacherName: 'Current User', // This would come from auth context
+      type: formData.type,
+      startDate: formData.startDate,
+      endDate: formData.endDate,
+      days: calculateDays(formData.startDate, formData.endDate),
+      reason: formData.reason,
+      status: 'pending' as const,
+      appliedDate: new Date().toISOString().split('T')[0]
+    };
+
+    addLeave(leaveData);
+    setShowSuccessMessage(true);
+    setTimeout(() => setShowSuccessMessage(false), 3000);
+    handleCancel();
+  };
+
+  const handleCancel = () => {
+    setShowAddForm(false);
+    setFormData({
+      type: 'sick',
+      startDate: '',
+      endDate: '',
+      reason: ''
+    });
+  };
+
+  const calculateDays = (startDate: string, endDate: string) => {
+    if (!startDate || !endDate) return 0;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffTime = Math.abs(end.getTime() - start.getTime());
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
   };
 
   const handleApprove = (id: string) => {
@@ -149,6 +205,30 @@ export function TeacherLeaves() {
             </div>
           </div>
 
+          {/* Tab Navigation */}
+          <div className="flex space-x-1 bg-slate-100 p-1 rounded-lg mb-4">
+            <button
+              onClick={() => setActiveTab('my-requests')}
+              className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                activeTab === 'my-requests'
+                  ? 'bg-white text-[#B43F3F] shadow-sm'
+                  : 'text-slate-600 hover:text-slate-800'
+              }`}
+            >
+              My Leave Requests
+            </button>
+            <button
+              onClick={() => setActiveTab('approvals')}
+              className={`flex-1 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                activeTab === 'approvals'
+                  ? 'bg-white text-[#B43F3F] shadow-sm'
+                  : 'text-slate-600 hover:text-slate-800'
+              }`}
+            >
+              Pending Approvals ({pendingApprovals.length})
+            </button>
+          </div>
+
           {/* Filters */}
           <div className="flex flex-col sm:flex-row gap-3">
             <select
@@ -176,6 +256,16 @@ export function TeacherLeaves() {
         </div>
       </div>
 
+      {/* Success Message */}
+      {showSuccessMessage && (
+        <div className="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+          <div className="flex items-center gap-2">
+            <CheckCircle className="w-5 h-5" />
+            <span>Leave request sent successfully!</span>
+          </div>
+        </div>
+      )}
+
       {/* Content */}
       <div className="px-4 py-6 sm:px-6 lg:px-8">
         {/* Leaves List */}
@@ -195,8 +285,8 @@ export function TeacherLeaves() {
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(leave.status)}`}>
                         {leave.status}
                       </span>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getLeaveTypeColor(leave.leaveType)}`}>
-                        {leave.leaveType}
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getLeaveTypeColor(leave.type)}`}>
+                        {leave.type}
                       </span>
                     </div>
                   </div>
@@ -261,13 +351,11 @@ export function TeacherLeaves() {
                 )}
               </div>
 
-              {leave.substituteTeacher && (
-                <div className="mt-3 pt-3 border-t border-slate-200">
-                  <p className="text-sm text-slate-600">
-                    <span className="font-medium">Substitute:</span> {leave.substituteTeacher}
-                  </p>
-                </div>
-              )}
+              <div className="mt-3 pt-3 border-t border-slate-200">
+                <p className="text-sm text-slate-600">
+                  <span className="font-medium">Applied:</span> {new Date(leave.appliedDate).toLocaleDateString()}
+                </p>
+              </div>
             </div>
           ))}
         </div>
@@ -305,23 +393,91 @@ export function TeacherLeaves() {
       {/* Add Leave Modal */}
       {showAddForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-bold text-slate-800 mb-4">Request New Leave</h2>
-            <p className="text-slate-600 mb-4">Leave request form would be implemented here...</p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowAddForm(false)}
-                className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => setShowAddForm(false)}
-                className="flex-1 px-4 py-2 bg-[#B43F3F] text-white rounded-lg hover:bg-[#A03636] transition-colors"
-              >
-                Submit
-              </button>
-            </div>
+          <div className="bg-white rounded-lg p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <h2 className="text-xl font-bold text-slate-800 mb-6">Request New Leave</h2>
+            
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Leave Type */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Leave Type *
+                </label>
+                <select
+                  value={formData.type}
+                  onChange={(e) => setFormData({...formData, type: e.target.value as any})}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B43F3F] focus:border-transparent text-slate-900 bg-white"
+                  required
+                >
+                  <option value="sick">Sick Leave</option>
+                  <option value="vacation">Vacation</option>
+                  <option value="personal">Personal Leave</option>
+                  <option value="emergency">Emergency Leave</option>
+                  <option value="maternity">Maternity Leave</option>
+                  <option value="paternity">Paternity Leave</option>
+                  <option value="training">Training Leave</option>
+                </select>
+              </div>
+
+              {/* Date Range */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    Start Date *
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.startDate}
+                    onChange={(e) => setFormData({...formData, startDate: e.target.value})}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B43F3F] focus:border-transparent text-slate-900 bg-white"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    End Date *
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.endDate}
+                    onChange={(e) => setFormData({...formData, endDate: e.target.value})}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B43F3F] focus:border-transparent text-slate-900 bg-white"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Reason */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Reason *
+                </label>
+                <textarea
+                  value={formData.reason}
+                  onChange={(e) => setFormData({...formData, reason: e.target.value})}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B43F3F] focus:border-transparent text-slate-900 bg-white"
+                  placeholder="Please provide a reason for your leave request..."
+                  rows={4}
+                  required
+                />
+              </div>
+
+              {/* Form Actions */}
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={handleCancel}
+                  className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-2 bg-[#B43F3F] text-white rounded-lg hover:bg-[#A03636] transition-colors font-medium"
+                >
+                  Submit Request
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

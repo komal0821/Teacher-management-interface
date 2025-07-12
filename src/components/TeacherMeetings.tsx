@@ -16,15 +16,26 @@ import {
 } from 'lucide-react';
 
 export function TeacherMeetings() {
-  const { meetings, addMeeting, updateMeeting, deleteMeeting } = useData();
+  const { meetings, addMeeting, updateMeeting, deleteMeeting, teachers } = useData();
   const [showAddForm, setShowAddForm] = useState(false);
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterType, setFilterType] = useState('all');
+  const [formData, setFormData] = useState({
+    title: '',
+    type: 'hr' as 'hr' | 'senior' | 'performance' | 'training' | 'disciplinary',
+    date: '',
+    startTime: '',
+    endTime: '',
+    teacherName: '',
+    location: '',
+    agenda: '',
+    priority: 'medium' as 'low' | 'medium' | 'high'
+  });
 
   // Filter meetings
   const filteredMeetings = meetings.filter(meeting => {
     const statusMatch = filterStatus === 'all' || meeting.status === filterStatus;
-    const typeMatch = filterType === 'all' || meeting.meetingWith.toLowerCase().includes(filterType.toLowerCase());
+    const typeMatch = filterType === 'all' || meeting.type.toLowerCase().includes(filterType.toLowerCase()) || meeting.teacherName.toLowerCase().includes(filterType.toLowerCase());
     return statusMatch && typeMatch;
   });
 
@@ -65,6 +76,45 @@ export function TeacherMeetings() {
       default:
         return 'bg-slate-100 text-slate-800';
     }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const meetingData = {
+      teacherId: 'current-user', // This would come from auth context in real app
+      teacherName: formData.teacherName,
+      title: formData.title,
+      type: formData.type,
+      date: formData.date,
+      startTime: formData.startTime,
+      endTime: formData.endTime,
+      location: formData.location,
+      attendees: [formData.teacherName],
+      agenda: formData.agenda,
+      priority: formData.priority,
+      status: 'scheduled' as const,
+      createdBy: 'Current User', // This would come from auth context
+      createdAt: new Date().toISOString()
+    };
+
+    addMeeting(meetingData);
+    handleCancel();
+  };
+
+  const handleCancel = () => {
+    setShowAddForm(false);
+    setFormData({
+      title: '',
+      type: 'hr',
+      date: '',
+      startTime: '',
+      endTime: '',
+      teacherName: '',
+      location: '',
+      agenda: '',
+      priority: 'medium'
+    });
   };
 
   return (
@@ -125,10 +175,11 @@ export function TeacherMeetings() {
                     <div className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
                       {meeting.teacherName.split(' ').map(n => n[0]).join('')}
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <h3 className="font-semibold text-slate-800 mb-1">{meeting.title}</h3>
-                      <p className="text-sm text-slate-600 mb-2">{meeting.teacherName}</p>
-                      <p className="text-sm text-slate-600 line-clamp-2">{meeting.description}</p>
+                    <div className="mb-4">
+                      <h3 className="font-semibold text-slate-800 mb-2">{meeting.title}</h3>
+                      <p className="text-sm text-slate-600 mb-3">
+                        {meeting.agenda || 'No agenda available'}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -152,11 +203,11 @@ export function TeacherMeetings() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4 flex-shrink-0" />
-                  <span>{meeting.time} ({meeting.duration}min)</span>
+                  <span>{meeting.startTime} - {meeting.endTime}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <User className="w-4 h-4 flex-shrink-0" />
-                  <span className="truncate">{meeting.meetingWith}</span>
+                  <span className="truncate">{meeting.teacherName}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <MapPin className="w-4 h-4 flex-shrink-0" />
@@ -202,23 +253,166 @@ export function TeacherMeetings() {
       {/* Add Meeting Modal */}
       {showAddForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-bold text-slate-800 mb-4">Schedule New Meeting</h2>
-            <p className="text-slate-600 mb-4">Meeting form would be implemented here...</p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowAddForm(false)}
-                className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => setShowAddForm(false)}
-                className="flex-1 px-4 py-2 bg-[#B43F3F] text-white rounded-lg hover:bg-[#A03636] transition-colors"
-              >
-                Schedule
-              </button>
-            </div>
+          <div className="bg-white rounded-lg p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <h2 className="text-xl font-bold text-slate-800 mb-6">Schedule New Meeting</h2>
+            
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Meeting Title */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Meeting Title *
+                </label>
+                <input
+                  type="text"
+                  value={formData.title}
+                  onChange={(e) => setFormData({...formData, title: e.target.value})}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B43F3F] focus:border-transparent text-slate-900 bg-white"
+                  placeholder="Enter meeting title"
+                  required
+                />
+              </div>
+
+              {/* Meeting Type */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Meeting Type *
+                </label>
+                <select
+                  value={formData.type}
+                  onChange={(e) => setFormData({...formData, type: e.target.value as 'hr' | 'senior' | 'performance' | 'training' | 'disciplinary'})}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B43F3F] focus:border-transparent text-slate-900 bg-white"
+                  required
+                >
+                  <option value="hr">HR Meeting</option>
+                  <option value="senior">Senior Staff Meeting</option>
+                  <option value="performance">Performance Review</option>
+                  <option value="training">Training Session</option>
+                  <option value="disciplinary">Disciplinary Meeting</option>
+                </select>
+              </div>
+
+              {/* Date */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Date *
+                </label>
+                <input
+                  type="date"
+                  value={formData.date}
+                  onChange={(e) => setFormData({...formData, date: e.target.value})}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B43F3F] focus:border-transparent text-slate-900 bg-white"
+                  required
+                />
+              </div>
+
+              {/* Start and End Time */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    Start Time *
+                  </label>
+                  <input
+                    type="time"
+                    value={formData.startTime}
+                    onChange={(e) => setFormData({...formData, startTime: e.target.value})}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B43F3F] focus:border-transparent text-slate-900 bg-white"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    End Time *
+                  </label>
+                  <input
+                    type="time"
+                    value={formData.endTime}
+                    onChange={(e) => setFormData({...formData, endTime: e.target.value})}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B43F3F] focus:border-transparent text-slate-900 bg-white"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Priority */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Priority
+                </label>
+                <select
+                  value={formData.priority}
+                  onChange={(e) => setFormData({...formData, priority: e.target.value as 'low' | 'medium' | 'high'})}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B43F3F] focus:border-transparent text-slate-900 bg-white"
+                >
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+
+              {/* Teacher Name */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Teacher Name *
+                </label>
+                <select
+                  value={formData.teacherName}
+                  onChange={(e) => setFormData({...formData, teacherName: e.target.value})}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B43F3F] focus:border-transparent text-slate-900 bg-white"
+                  required
+                >
+                  <option value="">Select teacher</option>
+                  {teachers.map(teacher => (
+                    <option key={teacher.id} value={teacher.name}>{teacher.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Location */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Location *
+                </label>
+                <input
+                  type="text"
+                  value={formData.location}
+                  onChange={(e) => setFormData({...formData, location: e.target.value})}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B43F3F] focus:border-transparent text-slate-900 bg-white"
+                  placeholder="Conference Room A, Online, etc."
+                  required
+                />
+              </div>
+
+              {/* Agenda */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Agenda
+                </label>
+                <textarea
+                  value={formData.agenda}
+                  onChange={(e) => setFormData({...formData, agenda: e.target.value})}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B43F3F] focus:border-transparent text-slate-900 bg-white"
+                  placeholder="Meeting agenda and topics to discuss..."
+                  rows={3}
+                />
+              </div>
+
+              {/* Form Actions */}
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={handleCancel}
+                  className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-2 bg-[#B43F3F] text-white rounded-lg hover:bg-[#A03636] transition-colors font-medium"
+                >
+                  Schedule Meeting
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
