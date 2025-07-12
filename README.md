@@ -225,6 +225,7 @@ Open a Pull Request
 - **Next.js Team** - For the amazing React framework
 - **Tailwind CSS** - For the utility-first CSS framework
 - **Netlify** - For the deployment platform and fonts
+- **Architecture** - https://app.eraser.io/workspace/btCk6wKpEXng1eBr5AOF
 
 ---
 
